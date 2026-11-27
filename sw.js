@@ -1,5 +1,5 @@
 // Cambia el número de versión cada vez que actualices la app, para que el celular baje lo nuevo
-const CACHE = 'finanzas-v1';
+const CACHE = 'finanzas-v2';
 const ARCHIVOS = ['./', 'index.html', 'style.css', 'app.js', 'manifest.json', 'icon-180.png', 'icon-512.png'];
 
 self.addEventListener('install', e =>

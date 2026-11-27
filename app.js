@@ -38,10 +38,28 @@ function proyeccion(D, fecha = new Date()) {
   return { ingresos, gastos, gastoDiario, actual, restantes, final: actual - gastoDiario * restantes, porCat };
 }
 
-if (typeof module !== 'undefined') module.exports = { num, saldoCliente, saldoDeuda, proyeccion, vacio };
+// Suma de abonos/pagos de clientes en el período: 'hoy' | 'semana' (desde el lunes) | 'mes' | 'todo'
+function cobrado(D, periodo, fecha = new Date()) {
+  const hoy = fechaISO(fecha);
+  const lunes = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate() - ((fecha.getDay() + 6) % 7));
+  const desde = { hoy, semana: fechaISO(lunes), mes: hoy.slice(0, 7) + '-01', todo: '' }[periodo];
+  return suma(D.clientes, c => suma(c.movs.filter(m => m.tipo === 'abono' && m.fecha >= desde && m.fecha <= hoy), m => m.monto));
+}
+
+if (typeof module !== 'undefined') module.exports = { num, saldoCliente, saldoDeuda, proyeccion, cobrado, vacio };
 
 // ---------- Pantalla ----------
 let D;
+let periodo = 'mes';
+function verPeriodo(p) { periodo = p; render(); }
+
+function borrarTodo() {
+  if (!confirm('¿Borrar TODOS los datos (clientes, saldos, deudas y movimientos) y empezar de cero?\n\nTe recomendamos exportar una copia antes. Esto no se puede deshacer.')) return;
+  D = vacio();
+  guardar();
+  alert('Listo, la app quedó en blanco.');
+}
+
 function cargar() {
   try { return Object.assign(vacio(), JSON.parse(localStorage.getItem(KEY))); }
   catch { return vacio(); }
@@ -75,8 +93,11 @@ function render() {
       const ult = c.movs[c.movs.length - 1];
       return `<li class="toca" onclick="verCliente('${c.id}')"><div><b>${esc(c.nombre)}</b>
         <small>${ult ? 'Último movimiento: ' + bonita(ult.fecha) : 'Sin movimientos'}</small></div>
-        <span class="monto ${debe > 0 ? 'mas' : 'aldia'}">${debe > 0 ? fmt(debe) : 'Al día ✓'}</span></li>`;
+        <span class="monto ${debe > 0 ? 'mas' : 'aldia'}">${debe > 0 ? fmt(debe) : 'Al día ✓'}</span>
+        <button type="button" class="x" aria-label="Borrar cliente ${esc(c.nombre)}" onclick="event.stopPropagation(); borrarCliente('${c.id}')">🗑</button></li>`;
     }).join('');
+  $('totalCobrado').textContent = fmt(cobrado(D, periodo));
+  document.querySelectorAll('#periodos button').forEach(b => b.classList.toggle('activo', b.dataset.p === periodo));
 
   // Personal
   $('saldoBanco').textContent = fmt(D.banco);
@@ -198,7 +219,8 @@ function borrarMovCliente(id, movId) {
 }
 
 function borrarCliente(id) {
-  if (!confirm('¿Borrar este cliente y todo su historial?')) return;
+  const c = D.clientes.find(x => x.id === id);
+  if (!confirm(`¿Borrar a ${c.nombre} y todo su historial? Esto no se puede deshacer.`)) return;
   D.clientes = D.clientes.filter(c => c.id !== id);
   $('dlg').close();
   guardar();

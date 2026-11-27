@@ -60,6 +60,12 @@ input, select {
 .mas { color: var(--rojo); }
 .menos { color: var(--verde); }
 .aldia { color: var(--suave); }
+.periodos { display: flex; gap: 6px; margin-top: 6px; }
+.periodos button {
+  flex: 1; border: 1px solid var(--borde); background: none; color: var(--texto);
+  border-radius: 10px; padding: 8px 2px; font: inherit; font-size: 13px; cursor: pointer;
+}
+.periodos button.activo { background: var(--marca); border-color: var(--marca); color: #fff; }
 .x { border: 0; background: none; color: var(--suave); font-size: 20px; padding: 4px 6px; cursor: pointer; }
 
 .estado { padding: 10px 12px; border-radius: 12px; font-weight: 600; }
