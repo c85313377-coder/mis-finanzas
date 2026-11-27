@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Finanzas">
+<meta name="theme-color" content="#0f766e">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="style.css">
+<title>Mis Finanzas</title>
+</head>
+<body>
+<header><h1 id="titulo">Negocio del colegio</h1></header>
+
+<main>
+  <section id="negocio" class="vista">
+    <div class="card destacada">
+      <span>Me deben en total</span>
+      <strong id="totalMeDeben">$0</strong>
+    </div>
+    <button class="btn" onclick="nuevoCliente()">+ Nuevo cliente</button>
+    <input type="search" id="buscar" placeholder="Buscar cliente…" oninput="render()" aria-label="Buscar cliente">
+    <ul id="listaClientes" class="lista"></ul>
+  </section>
+
+  <section id="personal" class="vista" hidden>
+    <div class="grid2">
+      <button class="card" onclick="editarSaldo('banco')"><span>🏦 Banco</span><strong id="saldoBanco"></strong><small>Toca para corregir</small></button>
+      <button class="card" onclick="editarSaldo('efectivo')"><span>💵 Efectivo</span><strong id="saldoEfectivo"></strong><small>Toca para corregir</small></button>
+    </div>
+    <div class="fila">
+      <button class="btn rojo" onclick="nuevoMov('gasto')">− Gasto</button>
+      <button class="btn verde" onclick="nuevoMov('ingreso')">+ Ingreso</button>
+    </div>
+    <div class="card" id="proyeccion"></div>
+    <h2>Lo que yo debo <span id="totalDebo"></span></h2>
+    <button class="btn sec" onclick="nuevaDeuda()">+ Agregar deuda mía</button>
+    <ul id="listaDeudas" class="lista"></ul>
+    <h2>Movimientos de este mes</h2>
+    <ul id="listaMovs" class="lista"></ul>
+  </section>
+
+  <section id="copia" class="vista" hidden>
+    <div class="card">
+      <p>Tus datos se guardan <b>solo en este celular</b>. Haz una copia de seguridad de vez en cuando y guárdala en Archivos o iCloud.</p>
+      <button class="btn" onclick="exportar()">⬇️ Exportar copia de seguridad</button>
+      <label class="btn sec">⬆️ Importar copia de seguridad
+        <input type="file" accept=".json,application/json" onchange="importar(this)" hidden>
+      </label>
+      <p><small>Importar reemplaza todos los datos actuales por los del archivo.</small></p>
+    </div>
+  </section>
+</main>
+
+<nav>
+  <button data-tab="negocio" class="activo" onclick="tab('negocio')">🏫<span>Negocio</span></button>
+  <button data-tab="personal" onclick="tab('personal')">👛<span>Personal</span></button>
+  <button data-tab="copia" onclick="tab('copia')">💾<span>Copia</span></button>
+</nav>
+
+<dialog id="dlg"><form id="dlgForm" method="dialog"></form></dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
